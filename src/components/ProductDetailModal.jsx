@@ -24,7 +24,8 @@ const ProductDetailModal = ({ product, isOpen, onClose }) => {
     const availableQuantity = product.quantity - (cartItem ? cartItem.cartQuantity : 0);
 
     const handleAddToCart = () => {
-        addToCart({ ...product, selectedSize });
+        const productWithSingleImage = { ...product, image: images[0] };
+        addToCart({ ...productWithSingleImage, selectedSize });
         onClose();
     };
 
