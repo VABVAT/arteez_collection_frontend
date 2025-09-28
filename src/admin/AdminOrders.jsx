@@ -16,7 +16,8 @@ const AdminOrders = () => {
             });
             if (res.ok) {
                 const data = await res.json();
-                setOrders(data);
+                const sortedOrders = data.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+                setOrders(sortedOrders);
             } else {
                 throw new Error('Failed to fetch orders');
             }
@@ -68,6 +69,7 @@ const AdminOrders = () => {
                         <div>User: {order.user.name}</div>
                         <div>Amount: ₹{(order.amount / 100).toFixed(2)}</div>
                         <div>Status: {order.status}</div>
+                        <div>Completed: {new Date(order.completedAt).toLocaleString()}</div>
                         <div>Delivered: {order.delivered ? 'Yes' : 'No'}</div>
                         <div className="mt-4">
                             {!order.delivered && (
@@ -92,6 +94,7 @@ const AdminOrders = () => {
                             <th className="py-3 px-6 text-left">User</th>
                             <th className="py-3 px-6 text-left">Amount</th>
                             <th className="py-3 px-6 text-left">Status</th>
+                            <th className="py-3 px-6 text-left">Completed At</th>
                             <th className="py-3 px-6 text-left">Delivered</th>
                             <th className="py-3 px-6 text-left">Actions</th>
                         </tr>
@@ -103,6 +106,7 @@ const AdminOrders = () => {
                                 <td className="py-3 px-6">{order.user.name}</td>
                                 <td className="py-3 px-6">₹{(order.amount / 100).toFixed(2)}</td>
                                 <td className="py-3 px-6">{order.status}</td>
+                                <td className="py-3 px-6">{new Date(order.completedAt).toLocaleString()}</td>
                                 <td className="py-3 px-6">{order.delivered ? 'Yes' : 'No'}</td>
                                 <td className="py-3 px-6">
                                     {!order.delivered && (

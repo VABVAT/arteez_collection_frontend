@@ -18,7 +18,8 @@ const OrdersPage = () => {
 
                 if (res.ok) {
                     const data = await res.json();
-                    setOrders(data);
+                    const sortedOrders = data.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+                    setOrders(sortedOrders);
                 } else {
                     throw new Error('Failed to fetch orders');
                 }
