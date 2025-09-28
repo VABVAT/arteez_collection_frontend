@@ -18,7 +18,7 @@ const ProductDetailModal = ({ product, isOpen, onClose }) => {
 
     if (!isOpen || !product) return null;
 
-    const allSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+    const allSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL', 'XXXXXL'];
 
     const cartItem = cart.find(item => item.id === product.id && item.selectedSize === selectedSize);
     const availableQuantity = product.quantity - (cartItem ? cartItem.cartQuantity : 0);

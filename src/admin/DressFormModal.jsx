@@ -140,7 +140,7 @@ const DressFormModal = ({ isOpen, onClose, onSave, dress }) => {
                     <div>
                         <label className="block font-bold mb-2">Sizes</label>
                         <div className="grid grid-cols-3 gap-2">
-                            {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map(size => (
+                            {['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL', 'XXXXXL'].map(size => (
                                 <label key={size} className="flex items-center space-x-2">
                                     <input type="checkbox" value={size} checked={formData.sizes?.includes(size)} onChange={handleSizeChange} />
                                     <span>{size}</span>
