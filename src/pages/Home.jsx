@@ -3,7 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import ProductDetailModal from "../components/ProductDetailModal.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000"; // e.g. http://localhost:4000
+const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000"; // e.g. http://localhost:4000
 
 const Home = () => {
     const { searchTerm, setSearchTerm } = useOutletContext();
