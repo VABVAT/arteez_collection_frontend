@@ -51,7 +51,7 @@ const OrdersPage = () => {
             ) : (
                 <div className="space-y-8">
                     {orders.map(order => (
-                        <div key={order.id} className="bg-white/30 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
+                        <div key={order.id} className="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
                             <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4">
                                 <div>
                                     <p className="font-semibold">Order ID: {order.razorpayOrderId}</p>

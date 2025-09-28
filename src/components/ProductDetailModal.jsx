@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCart } from "../context/CartContext.jsx";
 
 const ProductDetailModal = ({ product, isOpen, onClose }) => {
     const [selectedSize, setSelectedSize] = useState(null);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const { addToCart, cart } = useCart();
-    // const { toggleWishlist, isInWishlist } = useWishlist();
+
+    const images = product?.image ? product.image.split(',').filter(Boolean) : [];
 
     useEffect(() => {
         if (isOpen) {
             setSelectedSize(null);
+            setCurrentImageIndex(0);
         }
     }, [isOpen]);
 
     if (!isOpen || !product) return null;
 
     const allSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-    
 
     const cartItem = cart.find(item => item.id === product.id && item.selectedSize === selectedSize);
     const availableQuantity = product.quantity - (cartItem ? cartItem.cartQuantity : 0);
@@ -26,48 +28,66 @@ const ProductDetailModal = ({ product, isOpen, onClose }) => {
         onClose();
     };
 
+    const handlePrevImage = () => {
+        setCurrentImageIndex(prev => (prev === 0 ? images.length - 1 : prev - 1));
+    };
+
+    const handleNextImage = () => {
+        setCurrentImageIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
+    };
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-800 bg-opacity-75">
             {/* Backdrop */}
-            <div
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-                onClick={onClose}
-            />
+            <div className="absolute inset-0" onClick={onClose} />
 
             {/* Modal */}
-            <div className="relative bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/50 backdrop-blur-sm hover:bg-white/70 transition-colors sm:top-6 sm:right-6"
+                    className="absolute top-4 right-4 z-20 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors sm:top-6 sm:right-6"
                 >
                     <X className="w-6 h-6 text-gray-700" />
                 </button>
 
                 <div className="p-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Product Image */}
-                        <div className="aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-                            <img
-                                src={product.image}
-                                alt={product.name}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                    e.target.style.display = 'none';
-                                    e.target.nextSibling.style.display = 'flex';
-                                }}
-                            />
-                            <div className="w-full h-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center text-gray-500" style={{display: 'none'}}>
-                                <span>Image Loading...</span>
-                            </div>
+                        {/* Product Image Carousel */}
+                        <div className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+                            {images.length > 0 ? (
+                                <img
+                                    src={images[currentImageIndex]}
+                                    alt={`${product.name} ${currentImageIndex + 1}`}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-500">
+                                    <span>No Image</span>
+                                </div>
+                            )}
+
+                            {images.length > 1 && (
+                                <>
+                                    <button onClick={handlePrevImage} className="absolute top-1/2 left-2 -translate-y-1/2 bg-white/70 backdrop-blur-sm rounded-full p-2 z-10 transition-opacity">
+                                        <ChevronLeft className="w-6 h-6" />
+                                    </button>
+                                    <button onClick={handleNextImage} className="absolute top-1/2 right-2 -translate-y-1/2 bg-white/70 backdrop-blur-sm rounded-full p-2 z-10 transition-opacity">
+                                        <ChevronRight className="w-6 h-6" />
+                                    </button>
+                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                                        {images.map((_, index) => (
+                                            <div key={index} className={`w-2 h-2 rounded-full ${index === currentImageIndex ? 'bg-white' : 'bg-white/50'}`} />
+                                        ))}
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         {/* Product Details */}
                         <div className="space-y-6">
                             <div>
                                 <h2 className="text-3xl font-bold text-gray-800 mb-2">{product.name}</h2>
-
-                                
 
                                 {/* Price */}
                                 <div className="flex items-center space-x-3 mb-6">
@@ -103,7 +123,7 @@ const ProductDetailModal = ({ product, isOpen, onClose }) => {
                                             className={`px-4 py-2 rounded-lg border transition-colors ${
                                                 selectedSize === size
                                                     ? 'bg-purple-500 text-white border-purple-500'
-                                                    : 'bg-white/20 text-gray-700 border-white/30 hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed'
+                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed'
                                             }`}
                                         >
                                             {size}
@@ -121,7 +141,6 @@ const ProductDetailModal = ({ product, isOpen, onClose }) => {
                                 >
                                     {availableQuantity <= 0 ? 'Out of Stock' : `Add to Cart`}
                                 </button>
-                                
                             </div>
                         </div>
                     </div>

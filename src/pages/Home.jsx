@@ -26,7 +26,7 @@ const Home = () => {
         image: item.image ?? "",
         category: item.category ?? "suit", // fallback if backend doesn’t send category
         quantity: item.quantity ?? 10,
-        sizes: item.sizes ?? ['S', 'M', 'L'],
+        sizes: item.size ?? ['S', 'M', 'L'],
         description: item.description ?? "",
     });
 

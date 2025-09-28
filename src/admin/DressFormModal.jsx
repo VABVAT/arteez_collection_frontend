@@ -9,13 +9,17 @@ const DressFormModal = ({ isOpen, onClose, onSave, dress }) => {
 
     useEffect(() => {
         if (dress) {
-            setFormData(dress);
+            setFormData({
+                ...dress,
+                images: dress.image ? dress.image.split(',').filter(Boolean) : [],
+            });
         } else {
+            const storedImages = JSON.parse(localStorage.getItem('newDressImages') || '[]');
             setFormData({
                 name: '',
                 price: '',
                 original_price: '',
-                image: '',
+                images: storedImages,
                 description: '',
                 quantity: '',
                 sizes: [],
@@ -40,64 +44,94 @@ const DressFormModal = ({ isOpen, onClose, onSave, dress }) => {
     };
 
     const handlePhotoUpload = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const formData = new FormData();
-        formData.append('file', file);
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
 
         setUploading(true);
         setUploadError('');
 
-        try {
-            const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/admin/uploadphoto`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: formData,
-            });
+        const newUrls = [];
+        for (const file of files) {
+            const formData = new FormData();
+            formData.append('file', file);
 
-            if (!res.ok) {
-                throw new Error('Photo upload failed');
+            try {
+                const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/admin/uploadphoto`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: formData,
+                });
+
+                if (!res.ok) {
+                    throw new Error(`Upload failed for ${file.name}`);
+                }
+
+                const data = await res.json();
+                newUrls.push(data.url);
+            } catch (err) {
+                setUploadError(err.message);
+                // Stop further uploads if one fails
+                break;
             }
-
-            const data = await res.json();
-            setFormData(prev => ({ ...prev, image: data.url }));
-        } catch (err) {
-            setUploadError(err.message);
-        } finally {
-            setUploading(false);
         }
+
+        if (newUrls.length > 0) {
+            const updatedImages = [...(formData.images || []), ...newUrls];
+            setFormData(prev => ({ ...prev, images: updatedImages }));
+
+            if (!dress) {
+                localStorage.setItem('newDressImages', JSON.stringify(updatedImages));
+            }
+        }
+
+        setUploading(false);
     };
 
-    const handleSubmit = (e) => {
+    const handleSave = (e) => {
         e.preventDefault();
-        onSave(formData);
+        const dataToSave = {
+            ...formData,
+            image: (formData.images || []).join(','),
+        };
+        delete dataToSave.images;
+        
+        onSave(dataToSave);
+        localStorage.removeItem('newDressImages');
+    };
+
+    const handleClose = () => {
+        onClose();
+        if (!dress) {
+            localStorage.removeItem('newDressImages');
+        }
     };
 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="relative bg-white rounded-lg shadow-lg max-w-lg w-full p-8 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-800 bg-opacity-75">
+            <div className="relative bg-white rounded-lg shadow-xl max-w-lg w-full p-8 max-h-[90vh] overflow-y-auto">
                 <h2 className="text-2xl font-bold mb-6">{dress ? 'Edit Dress' : 'Add New Dress'}</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSave} className="space-y-4">
                     <input name="name" value={formData.name || ''} onChange={handleChange} placeholder="Name" className="w-full p-2 border rounded" required />
                     <input name="price" type="number" value={formData.price || ''} onChange={handleChange} placeholder="Price" className="w-full p-2 border rounded" required />
                     <input name="original_price" type="number" value={formData.original_price || ''} onChange={handleChange} placeholder="Original Price" className="w-full p-2 border rounded" />
                     
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Dress Image</label>
-                        <input type="file" onChange={handlePhotoUpload} className="w-full p-2 border rounded mt-1" accept="image/*" />
+                        <label className="block text-sm font-medium text-gray-700">Dress Images</label>
+                        <input type="file" onChange={handlePhotoUpload} className="w-full p-2 border rounded mt-1" accept="image/*" multiple />
                         {uploading && <p className="text-sm text-blue-500 mt-1">Uploading...</p>}
                         {uploadError && <p className="text-sm text-red-500 mt-1">{uploadError}</p>}
-                        {formData.image && !uploading && (
-                            <div className="mt-2">
-                                <img src={formData.image} alt="Preview" className="w-32 h-32 object-cover rounded"/>
-                                <p className="text-xs text-gray-500 mt-1">Image URL: {formData.image}</p>
-                            </div>
-                        )}
+                        
+                        <div className="mt-2 flex flex-wrap gap-2">
+                            {(formData.images || []).map((image, index) => (
+                                <div key={index} className="relative">
+                                    <img src={image} alt={`Preview ${index + 1}`} className="w-24 h-24 object-cover rounded"/>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     <textarea name="description" value={formData.description || ''} onChange={handleChange} placeholder="Description" className="w-full p-2 border rounded" />
@@ -116,7 +150,7 @@ const DressFormModal = ({ isOpen, onClose, onSave, dress }) => {
                     </div>
 
                     <div className="flex justify-end space-x-4 pt-4">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancel</button>
+                        <button type="button" onClick={handleClose} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancel</button>
                         <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300" disabled={uploading}>
                             {uploading ? 'Uploading...' : 'Save'}
                         </button>
