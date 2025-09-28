@@ -9,12 +9,12 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       if (token) {
         try {
-          // This endpoint doesn't exist in the provided backend, assuming it exists
           const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/me`, {
             headers: { Authorization: `Bearer ${token}` },
           });
@@ -24,7 +24,11 @@ export const AuthProvider = ({ children }) => {
           }
         } catch (error) {
           console.error("Failed to fetch user", error);
+        } finally {
+            setAuthLoading(false);
         }
+      } else {
+        setAuthLoading(false);
       }
     };
 
@@ -36,8 +40,27 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  const login = (newToken) => {
+  const login = async (newToken) => {
+    setAuthLoading(true);
     setToken(newToken);
+    if (newToken) {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/me`, {
+          headers: { Authorization: `Bearer ${newToken}` },
+        });
+        if (res.ok) {
+          const userData = await res.json();
+          setUser(userData);
+          return userData;
+        }
+      } catch (error) {
+        console.error("Failed to fetch user", error);
+      } finally {
+        setAuthLoading(false);
+      }
+    }
+    setAuthLoading(false);
+    return null;
   };
 
   const logout = () => {
@@ -51,6 +74,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!token,
     login,
     logout,
+    authLoading,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

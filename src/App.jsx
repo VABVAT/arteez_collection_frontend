@@ -14,9 +14,12 @@ import AdminDresses from './admin/AdminDresses.jsx';
 import AdminOrders from './admin/AdminOrders.jsx';
 import AdminUsers from './admin/AdminUsers.jsx';
 
+import AdminLoginPage from './admin/AdminLoginPage.jsx';
+
 const App = () => {
     return (
         <Routes>
+            <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route element={<MainLayout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/cart" element={<Cart />} />
@@ -28,7 +31,7 @@ const App = () => {
             </Route>
 
             {/* Admin Routes */}
-            <Route path="/admin/wxf6951" element={<AdminLayout />}>
+            <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDresses />} />
                 <Route path="dresses" element={<AdminDresses />} />
                 <Route path="orders" element={<AdminOrders />} />

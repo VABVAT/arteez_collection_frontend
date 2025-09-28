@@ -9,7 +9,7 @@ const AdminDresses = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDress, setSelectedDress] = useState(null);
     const { token } = useAuth();
-
+    console.log(token);
     const normalize = (item) => ({
         ...item,
         sizes: Array.isArray(item.sizes) ? item.sizes : (Array.isArray(item.size) ? item.size : []),

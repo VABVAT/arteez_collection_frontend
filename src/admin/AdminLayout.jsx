@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, Navigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const AdminLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const { isAuthenticated, user, authLoading } = useAuth();
+
+    if (authLoading) {
+        return <div className="text-center py-16">Loading...</div>;
+    }
+
+    if (!isAuthenticated) {
+        return <Navigate to="/admin/login" />;
+    }
 
     return (
         <div className="flex">
