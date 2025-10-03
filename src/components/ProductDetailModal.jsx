@@ -142,6 +142,14 @@ const ProductDetailModal = ({ product, isOpen, onClose }) => {
                                 >
                                     {availableQuantity <= 0 ? 'Out of Stock' : `Add to Cart`}
                                 </button>
+                                <a
+                                    href={`https://wa.me/7340996140?text=Hi, I have a query about the dress: ${product.name}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full py-4 bg-green-500 text-white rounded-2xl text-lg font-semibold hover:bg-green-600 transition-colors shadow-lg text-center"
+                                >
+                                    Chat on WhatsApp
+                                </a>
                             </div>
                         </div>
                     </div>

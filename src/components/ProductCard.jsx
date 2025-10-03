@@ -68,6 +68,14 @@ const ProductCard = ({ product, onViewDetails }) => {
                     >
                         View Options
                     </button>
+                    <a
+                        href={`https://wa.me/7340996140?text=Hi, I have a query about the dress: ${product.name}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 px-3 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors shadow-lg text-center"
+                    >
+                        Chat on WhatsApp
+                    </a>
                 </div>
             </div>
         </div>
