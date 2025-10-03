@@ -18,7 +18,7 @@ const ShippingPage = () => {
           Orders are dispatched within 3-5 working days. Most orders are delivered within 7-10 working days from the date of dispatch.
         </p>
         <p>
-          Delivery of all orders will be duly done to the address as mentioned by you at the time of placing the order. In case of modifications, kindly drop us a mail at contact@arteezcollection.com within 2 hours of placing the order.
+          Delivery of all orders will be duly done to the address as mentioned by you at the time of placing the order.
         </p>
 
         <h2 className="text-2xl font-semibold">Shipping Charges</h2>
