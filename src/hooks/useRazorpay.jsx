@@ -17,7 +17,7 @@ const useRazorpay = () => {
                 key: import.meta.env.VITE_RAZORPAY_KEY_ID,
                 amount: order.amount, // Amount in paise
                 currency: order.currency,
-                name: "fnt",
+                name: "arteez collection",
                 description: "Test Transaction",
                 order_id: order.razorpayOrderId,
                 handler: async (response) => {

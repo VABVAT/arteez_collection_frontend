@@ -13,6 +13,11 @@ import AdminLayout from './admin/AdminLayout.jsx';
 import AdminDresses from './admin/AdminDresses.jsx';
 import AdminOrders from './admin/AdminOrders.jsx';
 import AdminUsers from './admin/AdminUsers.jsx';
+import CancellationRefundPage from './pages/CancellationRefundPage.jsx';
+import TermsAndConditionsPage from './pages/TermsAndConditionsPage.jsx';
+import ShippingPage from './pages/ShippingPage.jsx';
+import PrivacyPage from './pages/PrivacyPage.jsx';
+import ContactUsPage from './pages/ContactUsPage.jsx';
 
 import AdminLoginPage from './admin/AdminLoginPage.jsx';
 
@@ -28,6 +33,11 @@ const App = () => {
                 <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
                 <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+                <Route path="/cancellation-refund" element={<CancellationRefundPage />} />
+                <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
+                <Route path="/shipping" element={<ShippingPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="/contact-us" element={<ContactUsPage />} />
             </Route>
 
             {/* Admin Routes */}
